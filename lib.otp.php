@@ -95,3 +95,29 @@ function otp_gen_secret($num_bytes = 20) {
 	$num_bytes = max($num_bytes, 15);
 	return gen_bytes($num_bytes);
 }
+
+class OTP {
+	public $type;
+	public $secret;
+	public $counter;
+	public $digits;
+	public $mode;
+	public $period;
+	public $epoch;
+	public $pin;
+	public $issuer;
+	public $account;
+
+	public function generate() {
+
+	}
+	public function validate($win_after = NULL, $win_before = NULL) {
+
+	}
+	public function toString() {
+
+	}
+	public static function createFromURN($urn) {
+
+	}
+}
