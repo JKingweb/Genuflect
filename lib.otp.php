@@ -32,7 +32,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
 
-namespace Genuflect;
+namespace genuflect;
 
 function otp_gen($secret, $counter, $digits = 6, $mode = "sha1") {
 	// number of digits must be either 6, 7, or 8)
@@ -65,3 +65,33 @@ function otp_gen_time($step = 30, $epoch = 0, $time = NULL) {
 	return (int) floor(($time - $epoch) / $step);
 }
 
+function gen_bytes($count) {
+	if (function_exists('random_bytes')) {
+		return random_bytes($count);
+	} else if (function_exists('openssl_random_pseudo_bytes')) {
+		return openssl_random_pseudo_bytes($count);
+	} else if (function_exists('mcrypt_create_iv')) {
+		return mcrypt_create_iv($count);
+	} else if (is_readable('/dev/random')) {
+		$f = fopen("/dev/random", "rb");
+		$b = fread($f, $count);
+		fclose($f);
+		return $b;
+	} else if (is_readable('/dev/urandom')) {
+		$f = fopen("/dev/urandom", "rb");
+		$rand = fread($f, $count);
+		fclose($f);
+		return $rand;
+	} else {
+		$rand = "";
+		for ($a = 0; $a < $count; $a++) {
+			$rand .= chr(mt_rand(0, 255));
+		} 
+    	return $rand;
+	}
+}
+
+function otp_gen_secret($num_bytes = 20) {
+	$num_bytes = max($num_bytes, 15);
+	return gen_bytes($num_bytes);
+}
