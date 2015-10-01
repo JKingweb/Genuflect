@@ -109,10 +109,28 @@ class OTP {
 	public $account;
 
 	public function generate() {
-
+		switch($this->type) {
+			case "totp": return otp_gen($this->secret, otp_gen_time($this->period, $this->epoch), $this->digits, $this->mode);
+			case "hotp": return otp_gen($this->secret, $this->counter, $this->digits, $this->mode);
+			case "motp": return "stub";
+		}
 	}
 	public function validate($win_after = NULL, $win_before = NULL) {
-
+		switch($this->type) {
+			case "totp":
+				if($win_after===NULL) $win_after = 2;
+				if($win_before===NULL) $win_before = 1;
+				break;
+			case "hotp":
+				if($win_after===NULL) $win_after = 6;
+				$win_before = 0;
+				break;
+			case "motp":
+				$win_after = 18;
+				$win_before = 18;
+		}
+		$win_after = abs($win_after);
+		$win_before = abs($win_before);
 	}
 	public function toString() {
 
